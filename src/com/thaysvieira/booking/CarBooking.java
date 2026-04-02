@@ -11,7 +11,7 @@ import java.util.Objects;
 import java.util.UUID;
 
 public class CarBooking {
-    private final UUID id;
+    private UUID id;
     private User user;
     private Car car;
     private LocalDate startDate;
@@ -20,26 +20,14 @@ public class CarBooking {
     private BookingStatus status;
     private LocalDateTime bookedAt;
 
-    public CarBooking(UUID id, User user, Car car, LocalDate startDate, LocalDate endDate, BookingStatus status, LocalDateTime bookedAt) {
+    public CarBooking(UUID id, User user, Car car, BigDecimal price, LocalDate startDate, LocalDate endDate, BookingStatus status, LocalDateTime bookedAt) {
 
-        if (id == null || user == null || car == null || startDate == null || endDate == null || status == null || bookedAt == null) {
-            throw new IllegalArgumentException("Booking fields cannot be null");
-        }
-
-        if (endDate.isBefore(startDate)) {
-            throw new IllegalArgumentException("End date cannot be before start date");
-        }
-
-        long numberOfDays = ChronoUnit.DAYS.between(startDate, endDate);
-        if (numberOfDays <= 0) {
-            numberOfDays = 1;
-        }
         this.id = id;
         this.user = user;
         this.car = car;
         this.startDate = startDate;
         this.endDate = endDate;
-        this.price = car.getRentalPricePerDay().multiply(BigDecimal.valueOf(numberOfDays));
+        this.price = price;
         this.status = status;
         this.bookedAt = bookedAt;
     }
@@ -48,36 +36,64 @@ public class CarBooking {
         return id;
     }
 
+    public void setId(UUID id) {
+        this.id = id;
+    }
+
     public User getUser() {
         return user;
+    }
+
+    public void setUser(User user) {
+        this.user = user;
     }
 
     public Car getCar() {
         return car;
     }
 
+    public void setCar(Car car) {
+        this.car = car;
+    }
+
     public LocalDate getStartDate() {
         return startDate;
+    }
+
+    public void setStartDate(LocalDate startDate) {
+        this.startDate = startDate;
     }
 
     public LocalDate getEndDate() {
         return endDate;
     }
 
+    public void setEndDate(LocalDate endDate) {
+        this.endDate = endDate;
+    }
+
     public BigDecimal getPrice() {
         return price;
+    }
+
+    public void setPrice(BigDecimal price) {
+        this.price = price;
     }
 
     public BookingStatus getStatus() {
         return status;
     }
 
+    public void setStatus(BookingStatus status) {
+        this.status = status;
+    }
+
     public LocalDateTime getBookedAt() {
         return bookedAt;
     }
 
-    public void setStatus(BookingStatus status) {
-        this.status = status;
+    public void setBookedAt(LocalDateTime bookedAt) {
+        this.bookedAt = bookedAt;
     }
 
     @Override

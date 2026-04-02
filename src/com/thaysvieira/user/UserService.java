@@ -12,7 +12,7 @@ public class UserService {
     public User[] getAllUsers() {
         User[] users = userDao.getAllUsers();
         if (users == null) {
-            return new User[0];
+            return new User[]{};
         }
         return users;
     }

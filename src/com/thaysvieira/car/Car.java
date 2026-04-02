@@ -5,7 +5,7 @@ import java.util.Objects;
 import java.util.UUID;
 
 public class Car {
-    private final UUID id;
+    private UUID id;
     private String regNumber;
     private BigDecimal rentalPricePerDay;
     private Brand brand;
@@ -23,20 +23,40 @@ public class Car {
         return id;
     }
 
+    public void setId(UUID id) {
+        this.id = id;
+    }
+
     public String getRegNumber() {
         return regNumber;
+    }
+
+    public void setRegNumber(String regNumber) {
+        this.regNumber = regNumber;
     }
 
     public BigDecimal getRentalPricePerDay() {
         return rentalPricePerDay;
     }
 
+    public void setRentalPricePerDay(BigDecimal rentalPricePerDay) {
+        this.rentalPricePerDay = rentalPricePerDay;
+    }
+
     public Brand getBrand() {
         return brand;
     }
 
+    public void setBrand(Brand brand) {
+        this.brand = brand;
+    }
+
     public boolean isElectric() {
         return isElectric;
+    }
+
+    public void setElectric(boolean electric) {
+        isElectric = electric;
     }
 
     @Override

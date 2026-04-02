@@ -44,8 +44,11 @@ public class Main {
                     break;
                 case 2:
                     // delete booking
-                    CarBooking cancelBooking = carBookingService.cancelBooking(UUID.fromString("4f1c6a7e-8c5b-4e2a-9d13-6b9a2f4c1d80"));
-                    System.out.println(cancelBooking);
+                    if(carBookingService.cancelBooking(UUID.fromString("4f1c6a7e-8c5b-4e2a-9d13-6b9a2f4c1d80"))){
+                        System.out.println("Car is successfully deleted");
+                    }else {
+                        System.out.println("Couldn't delete the car");
+                    }
                     break;
                 case 3:
                     // View car booked by the user

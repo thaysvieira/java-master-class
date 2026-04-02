@@ -8,17 +8,18 @@ public class CarService {
     public CarService(CarDao carDao) {
         this.carDao = carDao;
     }
-    public Car getCarById(UUID carId){
+
+    public Car getCarById(UUID carId) {
         if (carId == null) {
             throw new IllegalArgumentException("Car id cannot be null");
         }
         return carDao.getCarById(carId);
     }
 
-    public Car[] getCars(){
+    public Car[] getCars() {
         Car[] cars = carDao.getAllCars();
-        if(carDao.getAllCars()== null){
-            return new Car[0];
+        if (carDao.getAllCars() == null) {
+            return new Car[]{};
         }
         return cars;
     }
