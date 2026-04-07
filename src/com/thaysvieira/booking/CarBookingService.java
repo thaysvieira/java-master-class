@@ -28,13 +28,13 @@ public class CarBookingService {
         Car car = carService.getCarById(carId);
         //validate dates
         validateDate(startDate, endDate);
-        CarBooking booking = null;
-        boolean isBooked = false;
-        if (checkCarAvailability(car.getId())) {
-            booking =
-                    new CarBooking(UUID.randomUUID(), user, car, getPrice(startDate, endDate, car.getRentalPricePerDay()), startDate, endDate, BookingStatus.ACTIVE, LocalDateTime.now());
-            isBooked = carBookingDao.saveCarBooking(booking);
+
+        if (!isCarAvailable(carId)) {
+            throw new IllegalArgumentException("Car id not found");
         }
+
+        var booking = new CarBooking(UUID.randomUUID(), user, car, getPrice(startDate, endDate, car.getRentalPricePerDay()), startDate, endDate, BookingStatus.ACTIVE, LocalDateTime.now());
+        var isBooked = carBookingDao.saveCarBooking(booking);
 
         if (!isBooked) {
             throw new IllegalArgumentException("Failed booking");
@@ -144,7 +144,7 @@ public class CarBookingService {
         return electricCars;
     }
 
-    private boolean checkCarAvailability(UUID carId) {
+    private boolean isCarAvailable(UUID carId) {
 
         Car car = carService.getCarById(carId);
         CarBooking[] bookings = carBookingDao.getAllCarBooking();
