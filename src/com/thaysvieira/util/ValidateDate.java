@@ -1,11 +1,8 @@
 package com.thaysvieira.util;
 
-import com.thaysvieira.booking.CarBooking;
-import com.thaysvieira.car.Car;
-
 import java.time.LocalDate;
 
-public class Validate {
+public class ValidateDate {
 
     public static void validateDate(LocalDate startDate, LocalDate endDate) {
         if (startDate == null || endDate == null) {
@@ -18,11 +15,6 @@ public class Validate {
 
         if (endDate.isBefore(startDate)) {
             throw new IllegalArgumentException("End date cannot be before start date");
-        }
-    }
-    public static void requireNonNull(Object[] obj, String message) {
-        if (obj == null) {
-            throw new NullPointerException(message);
         }
     }
 

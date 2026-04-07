@@ -19,12 +19,8 @@ import java.util.Scanner;
 import java.util.UUID;
 
 public class Main {
-    private static final CarBookingDao carBookingDao = new CarBookingDao();
-    private static final UserDao userDao = new UserDao();
-    private static  final UserService userService = new UserService(userDao);
-    private static final CarDao carDao = new CarDao();
-    private static final CarService carService = new CarService(carDao);
-    private static  final  CarBookingService carBookingService = new CarBookingService(carBookingDao,carService,userService);
+    private static final UserService userService = new UserService();
+    private static final CarBookingService carBookingService = new CarBookingService();
 
     public static void main(String[] args) {
         System.out.println("Java Master Class");
@@ -39,14 +35,14 @@ public class Main {
             switch (option) {
                 case 1:
                     // Book a car
-                    CarBooking booking = carBookingService.bookCar(UUID.fromString("1be9ed11-0893-4734-9a24-83c6f6aa6474"), UUID.fromString("b53815cd-d7c4-4c8d-98fc-78d236bf908e"), LocalDate.of(2026, 4, 2), LocalDate.of(2026, 4, 4));
+                    CarBooking booking = carBookingService.bookCar(UUID.fromString("1be9ed11-0893-4734-9a24-83c6f6aa6474"), UUID.fromString("900eb4a4-4a43-4a02-9afe-723006eb0f6a"), LocalDate.now(), LocalDate.of(2026, 8, 4));
                     System.out.println(booking);
                     break;
                 case 2:
                     // delete booking
-                    if(carBookingService.cancelBooking(UUID.fromString("4f1c6a7e-8c5b-4e2a-9d13-6b9a2f4c1d80"))){
+                    if (carBookingService.cancelBooking(UUID.fromString("4f1c6a7e-8c5b-4e2a-9d13-6b9a2f4c1d80"))) {
                         System.out.println("Car is successfully deleted");
-                    }else {
+                    } else {
                         System.out.println("Couldn't delete the car");
                     }
                     break;
@@ -85,6 +81,7 @@ public class Main {
         }
 
     }
+
     public static void showMenu() {
         System.out.println("1 - Book Car");
         System.out.println("2 - Delete Booking");

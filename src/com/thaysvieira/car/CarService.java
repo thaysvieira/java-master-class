@@ -3,11 +3,7 @@ package com.thaysvieira.car;
 import java.util.UUID;
 
 public class CarService {
-    private final CarDao carDao;
-
-    public CarService(CarDao carDao) {
-        this.carDao = carDao;
-    }
+    private final CarDao carDao = new CarDao();
 
     public Car getCarById(UUID carId) {
         if (carId == null) {
@@ -17,10 +13,6 @@ public class CarService {
     }
 
     public Car[] getCars() {
-        Car[] cars = carDao.getAllCars();
-        if (carDao.getAllCars() == null) {
-            return new Car[]{};
-        }
-        return cars;
+        return carDao.getAllCars();
     }
 }

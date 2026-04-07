@@ -3,21 +3,14 @@ package com.thaysvieira.user;
 import java.util.UUID;
 
 public class UserService {
-    private final UserDao userDao;
-
-    public UserService(UserDao userDao) {
-        this.userDao = userDao;
-    }
+    private final UserDao userDao = new UserDao();
 
     public User[] getAllUsers() {
-        User[] users = userDao.getAllUsers();
-        if (users == null) {
-            return new User[]{};
-        }
-        return users;
+        return userDao.getAllUsers();
     }
 
     public User getUserById(UUID userId) {
+
         if (userId == null) {
             throw new IllegalArgumentException("User id cannot be null");
         }

@@ -11,6 +11,7 @@ import java.util.Objects;
 import java.util.UUID;
 
 public class CarBooking {
+
     private UUID id;
     private User user;
     private Car car;
@@ -20,7 +21,14 @@ public class CarBooking {
     private BookingStatus status;
     private LocalDateTime bookedAt;
 
-    public CarBooking(UUID id, User user, Car car, BigDecimal price, LocalDate startDate, LocalDate endDate, BookingStatus status, LocalDateTime bookedAt) {
+    public CarBooking(UUID id,
+                      User user,
+                      Car car,
+                      BigDecimal price,
+                      LocalDate startDate,
+                      LocalDate endDate,
+                      BookingStatus status,
+                      LocalDateTime bookedAt) {
 
         this.id = id;
         this.user = user;

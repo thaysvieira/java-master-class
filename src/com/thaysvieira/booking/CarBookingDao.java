@@ -9,10 +9,10 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
-import java.time.temporal.ChronoUnit;
 import java.util.UUID;
 
 public class CarBookingDao {
+
     private static final UserDao userDao = new UserDao();
     private static final CarDao carDao = new CarDao();
     private static final int CAPACITY = 100;
@@ -24,13 +24,11 @@ public class CarBookingDao {
         Car carAudi = carDao.getCarById(UUID.fromString("28fbcd64-c811-4fe9-8e4b-ac8166f267b1"));
         Car carToyota = carDao.getCarById(UUID.fromString("b53815cd-d7c4-4c8d-98fc-78d236bf908e"));
 
-        BigDecimal rentalPriceAudi = getPrice(LocalDate.of(2026, 4, 1), LocalDate.of(2026, 4, 6), carAudi.getRentalPricePerDay());
-        BigDecimal rentalPriceToyota = getPrice(LocalDate.of(2026, 6, 10), LocalDate.of(2026, 6, 16), carToyota.getRentalPricePerDay());
 
-        CarBooking audiBooked = new CarBooking(UUID.fromString("4f1c6a7e-8c5b-4e2a-9d13-6b9a2f4c1d80"), user, carAudi, rentalPriceAudi,
-                LocalDate.of(2026, 4, 1), LocalDate.of(2026, 4, 6), BookingStatus.COMPLETED, LocalDateTime.of(LocalDate.of(2026, 4, 1), LocalTime.of(13, 0, 0)));
-        CarBooking toyotaBooked = new CarBooking(UUID.fromString("3f1c6a7e-8c5b-4e2a-9d13-6b9a2f4c1d87"), user, carToyota, rentalPriceToyota,
-                LocalDate.of(2026, 6, 10), LocalDate.of(2026, 6, 16), BookingStatus.COMPLETED, LocalDateTime.of(LocalDate.of(2026, 6, 10), LocalTime.of(13, 0, 0)));
+        CarBooking audiBooked = new CarBooking(UUID.fromString("4f1c6a7e-8c5b-4e2a-9d13-6b9a2f4c1d80"), user, carAudi, BigDecimal.valueOf(300),
+                LocalDate.of(2026, 4, 1), LocalDate.of(2026, 4, 6), BookingStatus.ACTIVE, LocalDateTime.of(LocalDate.of(2026, 4, 1), LocalTime.of(13, 0, 0)));
+        CarBooking toyotaBooked = new CarBooking(UUID.fromString("3f1c6a7e-8c5b-4e2a-9d13-6b9a2f4c1d87"), user, carToyota, BigDecimal.valueOf(250),
+                LocalDate.of(2026, 6, 10), LocalDate.of(2026, 6, 16), BookingStatus.ACTIVE, LocalDateTime.of(LocalDate.of(2026, 6, 10), LocalTime.of(13, 0, 0)));
         carBookings[0] = audiBooked;
         carBookings[1] = toyotaBooked;
     }
@@ -45,7 +43,6 @@ public class CarBookingDao {
         return false;
     }
 
-
     public CarBooking[] getAllCarBooking() {
         return carBookings;
     }
@@ -58,13 +55,5 @@ public class CarBookingDao {
             }
         }
         return null;
-    }
-
-    private static BigDecimal getPrice(LocalDate startDate, LocalDate endDate, BigDecimal rentalCarPricePerDay) {
-        if (startDate == null && endDate == null && rentalCarPricePerDay == null) {
-            throw new IllegalArgumentException("Arguments can´t be null");
-        }
-        long numberOfDays = ChronoUnit.DAYS.between(startDate, endDate);
-        return rentalCarPricePerDay.multiply(BigDecimal.valueOf(numberOfDays));
     }
 }

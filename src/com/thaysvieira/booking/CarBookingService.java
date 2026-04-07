@@ -11,20 +11,14 @@ import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.UUID;
 
-import static com.thaysvieira.util.Validate.requireNonNull;
-import static com.thaysvieira.util.Validate.validateDate;
+import static com.thaysvieira.util.ValidateDate.validateDate;
 
 public class CarBookingService {
-    private final CarBookingDao carBookingDao;
-    private final CarService carService;
-    private final UserService userService;
 
+    private final CarBookingDao carBookingDao = new CarBookingDao();
+    private final CarService carService = new CarService();
+    private final UserService userService = new UserService();
 
-    public CarBookingService(CarBookingDao carBookingDao, CarService carService, UserService userService) {
-        this.carBookingDao = carBookingDao;
-        this.carService = carService;
-        this.userService = userService;
-    }
 
     public CarBooking bookCar(UUID userId, UUID carId, LocalDate startDate, LocalDate
             endDate) {
@@ -34,10 +28,14 @@ public class CarBookingService {
         Car car = carService.getCarById(carId);
         //validate dates
         validateDate(startDate, endDate);
-        checkCarAvailability(car, startDate, endDate);
-        CarBooking booking =
-                new CarBooking(UUID.randomUUID(), user, car, getPrice(startDate, endDate, car.getRentalPricePerDay()), startDate, endDate, BookingStatus.ACTIVE, LocalDateTime.now());
-        var isBooked = carBookingDao.saveCarBooking(booking);
+        CarBooking booking = null;
+        boolean isBooked = false;
+        if (checkCarAvailability(car.getId())) {
+            booking =
+                    new CarBooking(UUID.randomUUID(), user, car, getPrice(startDate, endDate, car.getRentalPricePerDay()), startDate, endDate, BookingStatus.ACTIVE, LocalDateTime.now());
+            isBooked = carBookingDao.saveCarBooking(booking);
+        }
+
         if (!isBooked) {
             throw new IllegalArgumentException("Failed booking");
         }
@@ -45,6 +43,7 @@ public class CarBookingService {
     }
 
     public boolean cancelBooking(UUID bookingId) {
+
         if (bookingId == null) {
             throw new IllegalArgumentException("Booking id cannot be null");
         }
@@ -57,6 +56,7 @@ public class CarBookingService {
     }
 
     public CarBooking[] getCarBookingsByUser(UUID userId) {
+
         User user = userService.getUserById(userId);
         if (user == null) {
             throw new IllegalArgumentException("User id cannot be null");
@@ -69,6 +69,7 @@ public class CarBookingService {
                 count++;
             }
         }
+
         CarBooking[] userBookings = new CarBooking[count];
         int userCount = 0;
         for (CarBooking booking : bookings) {
@@ -80,95 +81,157 @@ public class CarBookingService {
     }
 
     public CarBooking[] getAllBookings() {
-        if (carBookingDao.getAllCarBooking() == null) {
-            return new CarBooking[]{};
-        }
         return carBookingDao.getAllCarBooking();
     }
 
     public Car[] getAvailableCars() {
+
         CarBooking[] bookings = carBookingDao.getAllCarBooking();
-        requireNonNull(bookings, "Bookings can´t be null");
         Car[] cars = carService.getCars();
-        requireNonNull(cars, "Cars can´t be null");
-        int count = getCountForAvailableCars(bookings);
+        int count = getCountForAvailableCars(bookings, cars);
         Car[] availableCars = new Car[count];
         int countAvailableCar = 0;
-        for (CarBooking booking : bookings) {
-            if (booking != null && booking.getStatus() != BookingStatus.ACTIVE) {
-                availableCars[countAvailableCar++] = booking.getCar();
+
+        for (Car car : cars) {
+            if (car == null) continue;
+
+            boolean isAvailable = true;
+
+            if (bookings != null) {
+                for (CarBooking booking : bookings) {
+                    if (booking == null || booking.getCar() == null) break;
+
+                    if (booking.getStatus() == BookingStatus.ACTIVE && booking.getCar().getId().equals(car.getId())) {
+                        isAvailable = false;
+                        break;
+                    }
+                }
             }
-        }
-        if (availableCars.length == 0) {
-            return new Car[]{};
+            if (isAvailable) {
+                availableCars[countAvailableCar++] = car;
+            }
         }
         return availableCars;
     }
 
     public Car[] getAvailableElectricCars() {
+
         CarBooking[] bookings = carBookingDao.getAllCarBooking();
-        requireNonNull(bookings, "Bookings can´t be null");
         Car[] cars = carService.getCars();
-        requireNonNull(cars, "Cars can´t be null");
         int count = getCountForAvailableAndElectricCars(bookings, cars);
         Car[] electricCars = new Car[count];
         int countAvailableElectricCar = 0;
+
         for (Car car : cars) {
-            for (CarBooking booking : bookings) {
-                if (booking != null && (booking.getStatus() != (BookingStatus.ACTIVE)) && car.getId().equals(booking.getCar().getId()) && car.isElectric()) {
-                    electricCars[countAvailableElectricCar++] = booking.getCar();
+            if (car == null) continue;
+
+            boolean isAvailable = true;
+
+            if (bookings != null) {
+                for (CarBooking booking : bookings) {
+                    if (booking == null || booking.getCar() == null) break;
+
+                    if (booking.getStatus() == BookingStatus.ACTIVE && booking.getCar().getId().equals(car.getId()) || !car.isElectric()) {
+                        isAvailable = false;
+                        break;
+                    }
                 }
+            }
+            if (isAvailable) {
+                electricCars[countAvailableElectricCar++] = car;
             }
         }
         return electricCars;
     }
 
-    private void checkCarAvailability(Car car, LocalDate startDate, LocalDate
-            endDate) {
-        for (CarBooking booking : carBookingDao.getAllCarBooking()) {
-            if (booking == null) continue;
+    private boolean checkCarAvailability(UUID carId) {
 
-            boolean sameCar = booking.getCar().getId().equals(car.getId());
-            boolean active = booking.getStatus() == BookingStatus.ACTIVE;
+        Car car = carService.getCarById(carId);
+        CarBooking[] bookings = carBookingDao.getAllCarBooking();
+        if (bookings != null) {
+            for (CarBooking carBooking : bookings) {
+                if (carBooking == null || carBooking.getCar() == null) break;
+                if (carBooking.getStatus() == BookingStatus.ACTIVE && carBooking.getCar().getId().equals(car.getId())) {
+                    return false;
+                }
+            }
+        }
+        return true;
+    }
 
-            boolean overlap = !booking.getStartDate().isAfter(endDate)
-                    && !startDate.isAfter(booking.getEndDate());
+    private static int getCountForAvailableCars(CarBooking[] bookings, Car[] cars) {
+        if (cars == null) {
+            throw new IllegalArgumentException("Cars cannot be null");
+        }
+        int count = 0;
 
-            if (sameCar && active && overlap) {
-                throw new IllegalArgumentException("Car is not available for the selected dates");
+        for (Car car : cars) {
+            if (car == null) continue;
+
+            boolean isAvailable = true;
+
+            if (bookings != null) {
+                for (CarBooking booking : bookings) {
+                    if (booking == null || booking.getCar() == null) break;
+
+                    if (booking.getStatus() == BookingStatus.ACTIVE && booking.getCar().getId().equals(car.getId())) {
+                        isAvailable = false;
+                        break;
+                    }
+                }
+            }
+            if (isAvailable) {
+                count++;
             }
         }
 
+        return count;
     }
 
-    private static int getCountForAvailableCars(CarBooking[] bookings) {
+    private static int getCountForAvailableAndElectricCars(CarBooking[] bookings, Car[] cars) {
+
+        if (cars == null) {
+            throw new IllegalArgumentException("Cars cannot be null");
+        }
         int count = 0;
-        for (CarBooking booking : bookings) {
-            if (booking != null && booking.getStatus() != BookingStatus.ACTIVE) {
+
+        for (Car car : cars) {
+            if (car == null) continue;
+
+            boolean isAvailable = true;
+
+            if (bookings != null) {
+                for (CarBooking booking : bookings) {
+                    if (booking == null || booking.getCar() == null) break;
+
+                    if (booking.getStatus() == BookingStatus.ACTIVE && booking.getCar().getId().equals(car.getId()) || !car.isElectric()) {
+                        isAvailable = false;
+                        break;
+                    }
+                }
+            }
+            if (isAvailable) {
                 count++;
             }
         }
         return count;
     }
 
-    private static int getCountForAvailableAndElectricCars(CarBooking[] bookings, Car[] cars) {
-        int count = 0;
-        for (Car car : cars) {
-            for (CarBooking booking : bookings) {
-                if (booking != null && booking.getStatus() != BookingStatus.ACTIVE && car.getId().equals(booking.getCar().getId()) && car.isElectric()) {
-                    count++;
-                }
-            }
-        }
-        return count;
-    }
-
     public BigDecimal getPrice(LocalDate startDate, LocalDate endDate, BigDecimal rentalCarPricePerDay) {
+
         if (startDate == null && endDate == null && rentalCarPricePerDay == null) {
             throw new IllegalArgumentException("Arguments can´t be null");
         }
+
         long numberOfDays = ChronoUnit.DAYS.between(startDate, endDate);
+
+        if (numberOfDays < 1) {
+            throw new IllegalArgumentException("Number of the days can't be negative.");
+        }
         return rentalCarPricePerDay.multiply(BigDecimal.valueOf(numberOfDays));
     }
 
 }
+
+
+
