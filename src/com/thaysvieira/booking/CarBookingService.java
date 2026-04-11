@@ -15,9 +15,15 @@ import static com.thaysvieira.util.ValidateDate.validateDate;
 
 public class CarBookingService {
 
-    private final CarBookingDao carBookingDao = new CarBookingDao();
-    private final CarService carService = new CarService();
-    private final UserService userService = new UserService();
+    private final CarBookingDao carBookingDao;
+    private final CarService carService;
+    private final UserService userService;
+
+    public CarBookingService(CarBookingDao carBookingDao, CarService carService, UserService userService) {
+        this.carBookingDao = carBookingDao;
+        this.carService = carService;
+        this.userService = userService;
+    }
 
 
     public CarBooking bookCar(UUID userId, UUID carId, LocalDate startDate, LocalDate
@@ -42,18 +48,6 @@ public class CarBookingService {
         return booking;
     }
 
-    public boolean cancelBooking(UUID bookingId) {
-
-        if (bookingId == null) {
-            throw new IllegalArgumentException("Booking id cannot be null");
-        }
-        CarBooking booking = carBookingDao.getCarBookingById(bookingId);
-        if (booking == null) {
-            throw new IllegalArgumentException("Booking not found");
-        }
-        booking.setStatus(BookingStatus.CANCELLED);
-        return true;
-    }
 
     public CarBooking[] getCarBookingsByUser(UUID userId) {
 

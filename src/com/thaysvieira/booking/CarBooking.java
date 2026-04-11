@@ -3,14 +3,16 @@ package com.thaysvieira.booking;
 import com.thaysvieira.car.Car;
 import com.thaysvieira.user.User;
 
+import java.io.Serializable;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.temporal.ChronoUnit;
 import java.util.Objects;
 import java.util.UUID;
 
-public class CarBooking {
+public class CarBooking implements Serializable {
+
+    private static final long serialVersionUID = 1L;
 
     private UUID id;
     private User user;

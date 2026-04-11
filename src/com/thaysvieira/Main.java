@@ -3,13 +3,10 @@ package com.thaysvieira;
 // TODO 2. create a package with your name. i.e com.franco and move this file inside the new package
 // TODO 3. implement https://amigoscode.com/learn/java-cli-build/lectures/3a83ecf3-e837-4ae5-85a8-f8ae3f60f7f5
 
-import com.thaysvieira.booking.CarBooking;
-import com.thaysvieira.booking.CarBookingDao;
-import com.thaysvieira.booking.CarBookingService;
-import com.thaysvieira.car.Car;
-import com.thaysvieira.car.CarDao;
-import com.thaysvieira.car.CarService;
+import com.thaysvieira.booking.*;
+import com.thaysvieira.car.*;
 import com.thaysvieira.user.User;
+import com.thaysvieira.user.UserArrayDataAccessService;
 import com.thaysvieira.user.UserDao;
 import com.thaysvieira.user.UserService;
 
@@ -19,11 +16,18 @@ import java.util.Scanner;
 import java.util.UUID;
 
 public class Main {
-    private static final UserService userService = new UserService();
-    private static final CarBookingService carBookingService = new CarBookingService();
 
     public static void main(String[] args) {
+
+        CarBookingDao carBookingDaoFile = new CarBookingFileDataAccessService("bookings.dat");
+        CarBookingDao carBooking = new CarBookingArrayDataAccessService();
+        CarDao carDao = new CarArrayDataAccessService();
+        CarService carService = new CarService(carDao);
+        UserDao userDao = new UserArrayDataAccessService();
+        UserService userService = new UserService(userDao);
+        CarBookingService carBookingService = new CarBookingService(carBookingDaoFile, carService, userService);
         System.out.println("Java Master Class");
+
 
         Scanner scanner = new Scanner(System.in);
         boolean running = true;
@@ -34,14 +38,15 @@ public class Main {
             scanner.nextLine();
             switch (option) {
                 case 1:
-                    // Book a car
+                    // Book a car saved in file
                     CarBooking booking = carBookingService.bookCar(UUID.fromString("1be9ed11-0893-4734-9a24-83c6f6aa6474"), UUID.fromString("900eb4a4-4a43-4a02-9afe-723006eb0f6a"), LocalDate.now(), LocalDate.of(2026, 8, 4));
                     System.out.println(booking);
                     break;
                 case 2:
                     // delete booking
-                    if (carBookingService.cancelBooking(UUID.fromString("4f1c6a7e-8c5b-4e2a-9d13-6b9a2f4c1d80"))) {
+                    if (carBooking.cancelBooking(UUID.fromString("4f1c6a7e-8c5b-4e2a-9d13-6b9a2f4c1d80"))) {
                         System.out.println("Car is successfully deleted");
+                        System.out.println(carBookingDaoFile.cancelBooking(UUID.fromString("4f1c6a7e-8c5b-4e2a-9d13-6b9a2f4c1d80")));
                     } else {
                         System.out.println("Couldn't delete the car");
                     }
@@ -54,6 +59,9 @@ public class Main {
                 case 4:
                     // View all bookings
                     CarBooking[] allBookings = carBookingService.getAllBookings();
+                    System.out.println(Arrays.toString(allBookings));
+                    allBookings = carBooking.getAllCarBooking();
+                    System.out.println("Getting all the booking from a file");
                     System.out.println(Arrays.toString(allBookings));
                     break;
                 case 5:
