@@ -17,7 +17,7 @@ import java.util.UUID;
 
 public class Main {
 
-    public static void main(String[] args) {
+    static void main(String[] args) {
 
         CarBookingDao carBookingDaoFile = new CarBookingFileDataAccessService("bookings.dat");
         CarBookingDao carBooking = new CarBookingArrayDataAccessService();
@@ -25,7 +25,10 @@ public class Main {
         CarService carService = new CarService(carDao);
         UserDao userDao = new UserArrayDataAccessService();
         UserService userService = new UserService(userDao);
-        CarBookingService carBookingService = new CarBookingService(carBookingDaoFile, carService, userService);
+        CarBookingService carBookingService = new CarBookingService(carBooking, carService, userService);
+        CarBookingService carBookingServiceFile = new CarBookingService(carBookingDaoFile, carService, userService);
+
+
         System.out.println("Java Master Class");
 
 
@@ -39,14 +42,15 @@ public class Main {
             switch (option) {
                 case 1:
                     // Book a car saved in file
-                    CarBooking booking = carBookingService.bookCar(UUID.fromString("1be9ed11-0893-4734-9a24-83c6f6aa6474"), UUID.fromString("900eb4a4-4a43-4a02-9afe-723006eb0f6a"), LocalDate.now(), LocalDate.of(2026, 8, 4));
+                    CarBooking booking = carBookingService.bookCar(UUID.fromString("1be9ed11-0893-4734-9a24-83c6f6aa6474"), UUID.fromString("120759d2-a1ba-4bd5-99e8-08e7c82fac30"), LocalDate.now(), LocalDate.of(2026, 8, 4));
                     System.out.println(booking);
+                    CarBooking saveBookingInFile = carBookingServiceFile.bookCar(UUID.fromString("1be9ed11-0893-4734-9a24-83c6f6aa6474"), UUID.fromString("120759d2-a1ba-4bd5-99e8-08e7c82fac30"), LocalDate.now(), LocalDate.of(2026, 8, 4));
+                    System.out.println(saveBookingInFile);
                     break;
                 case 2:
                     // delete booking
                     if (carBooking.cancelBooking(UUID.fromString("4f1c6a7e-8c5b-4e2a-9d13-6b9a2f4c1d80"))) {
                         System.out.println("Car is successfully deleted");
-                        System.out.println(carBookingDaoFile.cancelBooking(UUID.fromString("4f1c6a7e-8c5b-4e2a-9d13-6b9a2f4c1d80")));
                     } else {
                         System.out.println("Couldn't delete the car");
                     }
@@ -54,7 +58,10 @@ public class Main {
                 case 3:
                     // View car booked by the user
                     CarBooking[] carBookingsByUser = carBookingService.getCarBookingsByUser(UUID.fromString("1be9ed11-0893-4734-9a24-83c6f6aa6474"));
+                    CarBooking[] carBookingsFileByUser = carBookingService.getCarBookingsByUser(UUID.fromString("1be9ed11-0893-4734-9a24-83c6f6aa6474"));
                     System.out.println(Arrays.toString(carBookingsByUser));
+                    System.out.println("Get all bookings from the file");
+                    System.out.println(Arrays.toString(carBookingsFileByUser));
                     break;
                 case 4:
                     // View all bookings
