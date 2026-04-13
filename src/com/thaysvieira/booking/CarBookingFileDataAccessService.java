@@ -15,13 +15,12 @@ public class CarBookingFileDataAccessService implements CarBookingDao {
     }
 
     @Override
-    public boolean saveCarBooking(CarBooking updateBooking) {
-        if (updateBooking == null) {
+    public boolean saveCarBooking(CarBooking carBooking) {
+        if (carBooking == null) {
             return false;
         }
         try {
-            writeBookingsInFile(updateBooking);
-            System.out.println("Data has been saved correctly as file!");
+            writeBookingsInFile(carBooking);
             return true;
         } catch (Exception e) {
             System.out.println(e.getMessage());
