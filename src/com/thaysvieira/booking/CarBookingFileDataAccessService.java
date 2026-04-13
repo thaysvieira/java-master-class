@@ -76,7 +76,7 @@ public class CarBookingFileDataAccessService implements CarBookingDao {
     private CarBooking[] readBookingsInFile() {
         File file = new File(filePath);
 
-        if (!file.exists() || file.length() == 0) {
+        if (file.exists() || file.length() == 0) {
             return new CarBooking[0];
         }
 
