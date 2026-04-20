@@ -3,10 +3,14 @@ package com.thaysvieira.user;
 import java.util.UUID;
 
 public class UserService {
-    private final UserDao userDao = new UserDao();
+    private final UserDao userArrayDataAccessService;
+
+    public UserService(UserDao userArrayDataAccessService) {
+        this.userArrayDataAccessService = userArrayDataAccessService;
+    }
 
     public User[] getAllUsers() {
-        return userDao.getAllUsers();
+        return userArrayDataAccessService.getAllUsers();
     }
 
     public User getUserById(UUID userId) {
@@ -14,7 +18,7 @@ public class UserService {
         if (userId == null) {
             throw new IllegalArgumentException("User id cannot be null");
         }
-        User user = userDao.getUserById(userId);
+        User user = userArrayDataAccessService.getUserById(userId);
         if (user == null) {
             throw new IllegalStateException("User not found");
         }

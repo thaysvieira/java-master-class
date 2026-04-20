@@ -3,16 +3,20 @@ package com.thaysvieira.car;
 import java.util.UUID;
 
 public class CarService {
-    private final CarDao carDao = new CarDao();
+    private final CarDao carArrayDataAccessService;
+
+    public CarService(CarDao carArrayDataAccessService) {
+        this.carArrayDataAccessService = carArrayDataAccessService;
+    }
 
     public Car getCarById(UUID carId) {
         if (carId == null) {
             throw new IllegalArgumentException("Car id cannot be null");
         }
-        return carDao.getCarById(carId);
+        return carArrayDataAccessService.getCarById(carId);
     }
 
     public Car[] getCars() {
-        return carDao.getAllCars();
+        return carArrayDataAccessService.getAllCars();
     }
 }
