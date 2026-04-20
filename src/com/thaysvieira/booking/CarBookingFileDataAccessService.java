@@ -3,6 +3,8 @@ package com.thaysvieira.booking;
 import com.thaysvieira.car.*;
 
 import java.io.*;
+import java.util.Collections;
+import java.util.List;
 import java.util.UUID;
 
 public class CarBookingFileDataAccessService implements CarBookingDao {
@@ -29,7 +31,7 @@ public class CarBookingFileDataAccessService implements CarBookingDao {
     }
 
     @Override
-    public CarBooking[] getAllCarBooking() {
+    public List<CarBooking> getAllCarBooking() {
         return readBookingsInFile();
     }
 
@@ -73,17 +75,17 @@ public class CarBookingFileDataAccessService implements CarBookingDao {
         }
     }
 
-    private CarBooking[] readBookingsInFile() {
+    private List<CarBooking> readBookingsInFile() {
         File file = new File(filePath);
 
         if (file.exists() || file.length() == 0) {
-            return new CarBooking[0];
+            return Collections.emptyList();
         }
 
         try (ObjectInputStream in =
                      new ObjectInputStream(new FileInputStream(file))) {
 
-            return (CarBooking[]) in.readObject();
+            return List.of((CarBooking[]) in.readObject());
 
         } catch (IOException | ClassNotFoundException e) {
             throw new RuntimeException("Failed to read bookings", e);
