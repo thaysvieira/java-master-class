@@ -37,14 +37,8 @@ public class CarBookingArrayDataAccessService implements CarBookingDao {
     }
 
     @Override
-    public boolean saveCarBooking(CarBooking carBooking) {
-        for (int i = 0; i < carBookings.size(); i++) {
-            if (carBookings.get(i) != null) {
+    public void saveCarBooking(CarBooking carBooking) {
                 carBookings.add(carBooking);
-                return true;
-            }
-        }
-        return false;
     }
 
     @Override

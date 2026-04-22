@@ -42,11 +42,7 @@ public class CarBookingService {
         }
 
         var booking = new CarBooking(UUID.randomUUID(), user, car, getPrice(startDate, endDate, car.getRentalPricePerDay()), startDate, endDate, BookingStatus.ACTIVE, LocalDateTime.now());
-        var isBooked = carBookingDao.saveCarBooking(booking);
-
-        if (!isBooked) {
-            throw new IllegalArgumentException("Failed booking");
-        }
+        carBookingDao.saveCarBooking(booking);
         return booking;
     }
 

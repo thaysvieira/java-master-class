@@ -5,7 +5,7 @@ import java.util.UUID;
 
 public interface CarBookingDao {
 
-    boolean saveCarBooking(CarBooking carBooking);
+    void saveCarBooking(CarBooking carBooking);
 
     List<CarBooking> getAllCarBooking();
 
