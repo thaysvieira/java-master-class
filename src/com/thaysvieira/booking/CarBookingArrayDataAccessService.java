@@ -38,7 +38,7 @@ public class CarBookingArrayDataAccessService implements CarBookingDao {
 
     @Override
     public void saveCarBooking(CarBooking carBooking) {
-                carBookings.add(carBooking);
+        carBookings.add(carBooking);
     }
 
     @Override
@@ -48,12 +48,10 @@ public class CarBookingArrayDataAccessService implements CarBookingDao {
 
     @Override
     public CarBooking getCarBookingById(UUID carBookingId) {
-        for (CarBooking booking : carBookings) {
-            if (booking != null && booking.getId().equals(carBookingId)) {
-                return booking;
-            }
-        }
-        return null;
+
+        return carBookings.stream()
+                .filter(carBooking -> carBooking.getId().equals(carBookingId))
+                .findFirst().orElseThrow(() -> new RuntimeException("Booking not found"));
     }
 
     @Override

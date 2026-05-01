@@ -9,9 +9,8 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
+import java.util.stream.Collectors;
 
 import static com.thaysvieira.util.ValidateDate.validateDate;
 
@@ -38,7 +37,7 @@ public class CarBookingService {
         validateDate(startDate, endDate);
 
         if (!isCarAvailable(carId)) {
-            throw new IllegalArgumentException("Car id not found");
+            throw new IllegalArgumentException("Car not available");
         }
 
         var booking = new CarBooking(UUID.randomUUID(), user, car, getPrice(startDate, endDate, car.getRentalPricePerDay()), startDate, endDate, BookingStatus.ACTIVE, LocalDateTime.now());
@@ -53,16 +52,8 @@ public class CarBookingService {
         if (user == null) {
             throw new IllegalArgumentException("User id cannot be null");
         }
-
         List<CarBooking> bookings = carBookingDao.getAllCarBooking();
-
-        List<CarBooking> userBookings = new ArrayList<>();
-        for (CarBooking booking : bookings) {
-            if (booking != null && booking.getUser().getId().equals(userId)) {
-                userBookings.add(booking);
-            }
-        }
-        return userBookings;
+        return bookings.stream().filter(booking -> booking.getUser().getId().equals(userId)).collect(Collectors.toList());
     }
 
     public List<CarBooking> getAllBookings() {
@@ -73,71 +64,42 @@ public class CarBookingService {
 
         List<CarBooking> bookings = carBookingDao.getAllCarBooking();
         List<Car> cars = carService.getCars();
-        List<Car> availableCars = new ArrayList<>();
+        Set<UUID> activeCarBookings = getUUIdsActiveCars(bookings);
 
-        for (Car car : cars) {
-            if (car == null) continue;
-
-            boolean isAvailable = true;
-
-            if (bookings != null) {
-                for (CarBooking booking : bookings) {
-                    if (booking == null || booking.getCar() == null) break;
-
-                    if (booking.getStatus() == BookingStatus.ACTIVE && booking.getCar().getId().equals(car.getId())) {
-                        isAvailable = false;
-                        break;
-                    }
-                }
-            }
-            if (isAvailable) {
-                availableCars.add(car);
-            }
-        }
-        return availableCars;
+        return cars.stream()
+                .filter(car -> !activeCarBookings.contains(car.getId()))
+                .toList();
     }
 
     public List<Car> getAvailableElectricCars() {
 
         List<CarBooking> bookings = carBookingDao.getAllCarBooking();
         List<Car> cars = carService.getCars();
-        List<Car> electricCars = new ArrayList<>();
 
-        for (Car car : cars) {
-            if (car == null) continue;
+        Set<UUID> activeCarBookings = getUUIdsActiveCars(bookings);
 
-            boolean isAvailable = true;
+        return cars.stream()
+                .filter(car -> !activeCarBookings.contains(car.getId()))
+                .filter(Car::isElectric)
+                .toList();
+    }
 
-            if (bookings != null) {
-                for (CarBooking booking : bookings) {
-                    if (booking == null || booking.getCar() == null) break;
-
-                    if (booking.getStatus() == BookingStatus.ACTIVE && booking.getCar().getId().equals(car.getId()) || !car.isElectric()) {
-                        isAvailable = false;
-                        break;
-                    }
-                }
-            }
-            if (isAvailable) {
-                electricCars.add(car);
-            }
-        }
-        return electricCars;
+    private static Set<UUID> getUUIdsActiveCars(List<CarBooking> bookings) {
+        return bookings.stream()
+                .filter(booking -> booking.getStatus() == BookingStatus.ACTIVE)
+                .map(carBooking -> carBooking.getCar().getId())
+                .collect(Collectors.toSet());
     }
 
     private boolean isCarAvailable(UUID carId) {
 
-        Car car = carService.getCarById(carId);
         List<CarBooking> bookings = carBookingDao.getAllCarBooking();
-        if (bookings != null) {
-            for (CarBooking carBooking : bookings) {
-                if (carBooking == null || carBooking.getCar() == null) break;
-                if (carBooking.getStatus() == BookingStatus.ACTIVE && carBooking.getCar().getId().equals(car.getId())) {
-                    return false;
-                }
-            }
-        }
-        return true;
+        List<Car> cars = carService.getCars();
+
+        Set<UUID> activeCarBookings = getUUIdsActiveCars(bookings);
+
+        return cars.stream()
+                .anyMatch(car -> !activeCarBookings.contains(carId));
     }
 
 

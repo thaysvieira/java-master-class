@@ -33,13 +33,10 @@ public class CarBookingFileDataAccessService implements CarBookingDao {
 
     @Override
     public CarBooking getCarBookingById(UUID carBookingId) {
-        for (CarBooking booking : readBookingsInFile()) {
-            if (booking == null) break;
-            if (booking.getId().equals(carBookingId)) {
-                return booking;
-            }
-        }
-        return null;
+
+        return readBookingsInFile().stream()
+                .filter(booking -> booking.getId().equals(carBookingId))
+                .findFirst().orElseThrow(() -> new RuntimeException("Booking not found"));
     }
 
     public boolean cancelBooking(UUID bookingId) {
