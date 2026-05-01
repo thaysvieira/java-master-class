@@ -11,15 +11,16 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 public class CarBookingArrayDataAccessService implements CarBookingDao {
 
     private static final UserDao userArrayDataAccessService = new UserArrayDataAccessService();
     private static final CarDao carArrayDataAccessService = new CarArrayDataAccessService();
-    private static final int CAPACITY = 100;
 
-    private static final CarBooking[] carBookings = new CarBooking[CAPACITY];
+    private static final List<CarBooking> carBookings = new ArrayList<>();
 
     static {
         User user = userArrayDataAccessService.getUserById(UUID.fromString("1be9ed11-0893-4734-9a24-83c6f6aa6474"));
@@ -31,23 +32,17 @@ public class CarBookingArrayDataAccessService implements CarBookingDao {
                 LocalDate.of(2026, 4, 1), LocalDate.of(2026, 4, 6), BookingStatus.ACTIVE, LocalDateTime.of(LocalDate.of(2026, 4, 1), LocalTime.of(13, 0, 0)));
         CarBooking toyotaBooked = new CarBooking(UUID.fromString("3f1c6a7e-8c5b-4e2a-9d13-6b9a2f4c1d87"), user, carToyota, BigDecimal.valueOf(250),
                 LocalDate.of(2026, 6, 10), LocalDate.of(2026, 6, 16), BookingStatus.ACTIVE, LocalDateTime.of(LocalDate.of(2026, 6, 10), LocalTime.of(13, 0, 0)));
-        carBookings[0] = audiBooked;
-        carBookings[1] = toyotaBooked;
+        carBookings.add(audiBooked);
+        carBookings.add(toyotaBooked);
     }
 
     @Override
-    public boolean saveCarBooking(CarBooking carBooking) {
-        for (int i = 0; i < carBookings.length; i++) {
-            if (carBookings[i] == null) {
-                carBookings[i] = carBooking;
-                return true;
-            }
-        }
-        return false;
+    public void saveCarBooking(CarBooking carBooking) {
+                carBookings.add(carBooking);
     }
 
     @Override
-    public CarBooking[] getAllCarBooking() {
+    public List<CarBooking> getAllCarBooking() {
         return carBookings;
     }
 

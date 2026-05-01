@@ -9,6 +9,8 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 import static com.thaysvieira.util.ValidateDate.validateDate;
@@ -40,51 +42,38 @@ public class CarBookingService {
         }
 
         var booking = new CarBooking(UUID.randomUUID(), user, car, getPrice(startDate, endDate, car.getRentalPricePerDay()), startDate, endDate, BookingStatus.ACTIVE, LocalDateTime.now());
-        var isBooked = carBookingDao.saveCarBooking(booking);
-
-        if (!isBooked) {
-            throw new IllegalArgumentException("Failed booking");
-        }
+        carBookingDao.saveCarBooking(booking);
         return booking;
     }
 
 
-    public CarBooking[] getCarBookingsByUser(UUID userId) {
+    public List<CarBooking> getCarBookingsByUser(UUID userId) {
 
         User user = userService.getUserById(userId);
         if (user == null) {
             throw new IllegalArgumentException("User id cannot be null");
         }
 
-        CarBooking[] bookings = carBookingDao.getAllCarBooking();
-        int count = 0;
-        for (CarBooking booking : bookings) {
-            if (booking != null && booking.getUser().getId().equals(userId)) {
-                count++;
-            }
-        }
+        List<CarBooking> bookings = carBookingDao.getAllCarBooking();
 
-        CarBooking[] userBookings = new CarBooking[count];
-        int userCount = 0;
+        List<CarBooking> userBookings = new ArrayList<>();
         for (CarBooking booking : bookings) {
             if (booking != null && booking.getUser().getId().equals(userId)) {
-                userBookings[userCount++] = booking;
+                userBookings.add(booking);
             }
         }
         return userBookings;
     }
 
-    public CarBooking[] getAllBookings() {
+    public List<CarBooking> getAllBookings() {
         return carBookingDao.getAllCarBooking();
     }
 
-    public Car[] getAvailableCars() {
+    public List<Car> getAvailableCars() {
 
-        CarBooking[] bookings = carBookingDao.getAllCarBooking();
-        Car[] cars = carService.getCars();
-        int count = getCountForAvailableCars(bookings, cars);
-        Car[] availableCars = new Car[count];
-        int countAvailableCar = 0;
+        List<CarBooking> bookings = carBookingDao.getAllCarBooking();
+        List<Car> cars = carService.getCars();
+        List<Car> availableCars = new ArrayList<>();
 
         for (Car car : cars) {
             if (car == null) continue;
@@ -102,19 +91,17 @@ public class CarBookingService {
                 }
             }
             if (isAvailable) {
-                availableCars[countAvailableCar++] = car;
+                availableCars.add(car);
             }
         }
         return availableCars;
     }
 
-    public Car[] getAvailableElectricCars() {
+    public List<Car> getAvailableElectricCars() {
 
-        CarBooking[] bookings = carBookingDao.getAllCarBooking();
-        Car[] cars = carService.getCars();
-        int count = getCountForAvailableAndElectricCars(bookings, cars);
-        Car[] electricCars = new Car[count];
-        int countAvailableElectricCar = 0;
+        List<CarBooking> bookings = carBookingDao.getAllCarBooking();
+        List<Car> cars = carService.getCars();
+        List<Car> electricCars = new ArrayList<>();
 
         for (Car car : cars) {
             if (car == null) continue;
@@ -132,7 +119,7 @@ public class CarBookingService {
                 }
             }
             if (isAvailable) {
-                electricCars[countAvailableElectricCar++] = car;
+                electricCars.add(car);
             }
         }
         return electricCars;
@@ -141,7 +128,7 @@ public class CarBookingService {
     private boolean isCarAvailable(UUID carId) {
 
         Car car = carService.getCarById(carId);
-        CarBooking[] bookings = carBookingDao.getAllCarBooking();
+        List<CarBooking> bookings = carBookingDao.getAllCarBooking();
         if (bookings != null) {
             for (CarBooking carBooking : bookings) {
                 if (carBooking == null || carBooking.getCar() == null) break;
@@ -153,63 +140,6 @@ public class CarBookingService {
         return true;
     }
 
-    private static int getCountForAvailableCars(CarBooking[] bookings, Car[] cars) {
-        if (cars == null) {
-            throw new IllegalArgumentException("Cars cannot be null");
-        }
-        int count = 0;
-
-        for (Car car : cars) {
-            if (car == null) continue;
-
-            boolean isAvailable = true;
-
-            if (bookings != null) {
-                for (CarBooking booking : bookings) {
-                    if (booking == null || booking.getCar() == null) break;
-
-                    if (booking.getStatus() == BookingStatus.ACTIVE && booking.getCar().getId().equals(car.getId())) {
-                        isAvailable = false;
-                        break;
-                    }
-                }
-            }
-            if (isAvailable) {
-                count++;
-            }
-        }
-
-        return count;
-    }
-
-    private static int getCountForAvailableAndElectricCars(CarBooking[] bookings, Car[] cars) {
-
-        if (cars == null) {
-            throw new IllegalArgumentException("Cars cannot be null");
-        }
-        int count = 0;
-
-        for (Car car : cars) {
-            if (car == null) continue;
-
-            boolean isAvailable = true;
-
-            if (bookings != null) {
-                for (CarBooking booking : bookings) {
-                    if (booking == null || booking.getCar() == null) break;
-
-                    if (booking.getStatus() == BookingStatus.ACTIVE && booking.getCar().getId().equals(car.getId()) || !car.isElectric()) {
-                        isAvailable = false;
-                        break;
-                    }
-                }
-            }
-            if (isAvailable) {
-                count++;
-            }
-        }
-        return count;
-    }
 
     public BigDecimal getPrice(LocalDate startDate, LocalDate endDate, BigDecimal rentalCarPricePerDay) {
 

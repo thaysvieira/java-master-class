@@ -1,5 +1,6 @@
 package com.thaysvieira.car;
 
+import java.util.List;
 import java.util.UUID;
 
 public class CarService {
@@ -16,7 +17,7 @@ public class CarService {
         return carArrayDataAccessService.getCarById(carId);
     }
 
-    public Car[] getCars() {
+    public List<Car> getCars() {
         return carArrayDataAccessService.getAllCars();
     }
 }

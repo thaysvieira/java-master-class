@@ -1,10 +1,11 @@
 package com.thaysvieira.user;
 
+import java.util.List;
 import java.util.UUID;
 
 public interface UserDao {
 
-    User[] getAllUsers();
+    List<User> getAllUsers();
 
     User getUserById(UUID userId);
 }

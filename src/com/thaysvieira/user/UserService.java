@@ -1,5 +1,6 @@
 package com.thaysvieira.user;
 
+import java.util.List;
 import java.util.UUID;
 
 public class UserService {
@@ -9,7 +10,7 @@ public class UserService {
         this.userArrayDataAccessService = userArrayDataAccessService;
     }
 
-    public User[] getAllUsers() {
+    public List<User> getAllUsers() {
         return userArrayDataAccessService.getAllUsers();
     }
 

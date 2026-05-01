@@ -1,12 +1,13 @@
 package com.thaysvieira.booking;
 
+import java.util.List;
 import java.util.UUID;
 
 public interface CarBookingDao {
 
-    boolean saveCarBooking(CarBooking carBooking);
+    void saveCarBooking(CarBooking carBooking);
 
-    CarBooking[] getAllCarBooking();
+    List<CarBooking> getAllCarBooking();
 
     CarBooking getCarBookingById(UUID carBookingId);
 

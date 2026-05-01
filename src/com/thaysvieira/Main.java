@@ -11,7 +11,7 @@ import com.thaysvieira.user.UserDao;
 import com.thaysvieira.user.UserService;
 
 import java.time.LocalDate;
-import java.util.Arrays;
+import java.util.List;
 import java.util.Scanner;
 import java.util.UUID;
 
@@ -57,34 +57,34 @@ public class Main {
                     break;
                 case 3:
                     // View car booked by the user
-                    CarBooking[] carBookingsByUser = carBookingService.getCarBookingsByUser(UUID.fromString("1be9ed11-0893-4734-9a24-83c6f6aa6474"));
-                    CarBooking[] carBookingsFileByUser = carBookingService.getCarBookingsByUser(UUID.fromString("1be9ed11-0893-4734-9a24-83c6f6aa6474"));
-                    System.out.println(Arrays.toString(carBookingsByUser));
+                    List<CarBooking> carBookingsByUser = carBookingService.getCarBookingsByUser(UUID.fromString("1be9ed11-0893-4734-9a24-83c6f6aa6474"));
+                    List<CarBooking> carBookingsFileByUser = carBookingService.getCarBookingsByUser(UUID.fromString("1be9ed11-0893-4734-9a24-83c6f6aa6474"));
+                    System.out.println(carBookingsByUser);
                     System.out.println("Get all bookings from the file");
-                    System.out.println(Arrays.toString(carBookingsFileByUser));
+                    System.out.println(carBookingsFileByUser);
                     break;
                 case 4:
                     // View all bookings
-                    CarBooking[] allBookings = carBookingService.getAllBookings();
-                    System.out.println(Arrays.toString(allBookings));
+                    List<CarBooking> allBookings = carBookingService.getAllBookings();
+                    System.out.println(allBookings);
                     allBookings = carBooking.getAllCarBooking();
                     System.out.println("Getting all the booking from a file");
-                    System.out.println(Arrays.toString(allBookings));
+                    System.out.println(allBookings);
                     break;
                 case 5:
                     // View all the available cars
-                    Car[] availableCars = carBookingService.getAvailableCars();
-                    System.out.println(Arrays.toString(availableCars));
+                    List<Car> availableCars = carBookingService.getAvailableCars();
+                    System.out.println(availableCars);
                     break;
                 case 6:
                     // View all the available electric cars
-                    Car[] availableElectricCars = carBookingService.getAvailableElectricCars();
-                    System.out.println(Arrays.toString(availableElectricCars));
+                    List<Car> availableElectricCars = carBookingService.getAvailableElectricCars();
+                    System.out.println(availableElectricCars);
                     break;
                 case 7:
                     // View all users
-                    User[] allUsers = userService.getAllUsers();
-                    System.out.println(Arrays.toString(allUsers));
+                    List<User> allUsers = userService.getAllUsers();
+                    System.out.println(allUsers);
                     break;
                 case 8:
                     running = false;
