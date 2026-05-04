@@ -53,7 +53,7 @@ public class CarBookingService {
             throw new IllegalArgumentException("User id cannot be null");
         }
         List<CarBooking> bookings = carBookingDao.getAllCarBooking();
-        return bookings.stream().filter(booking -> booking.getUser().getId().equals(userId)).collect(Collectors.toList());
+        return bookings.stream().filter(booking -> booking.getUser().getId().equals(userId)).toList();
     }
 
     public List<CarBooking> getAllBookings() {
@@ -84,7 +84,7 @@ public class CarBookingService {
                 .toList();
     }
 
-    private static Set<UUID> getUUIdsActiveCars(List<CarBooking> bookings) {
+    private Set<UUID> getUUIdsActiveCars(List<CarBooking> bookings) {
         return bookings.stream()
                 .filter(booking -> booking.getStatus() == BookingStatus.ACTIVE)
                 .map(carBooking -> carBooking.getCar().getId())

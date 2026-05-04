@@ -30,7 +30,7 @@ public class CarArrayDataAccessService implements CarDao {
         return cars.stream()
                 .filter(car -> car.getId().equals(carId))
                 .findFirst()
-                .orElseThrow(() -> new RuntimeException("Car not found"));
+                .orElse(null);
     }
 
     @Override

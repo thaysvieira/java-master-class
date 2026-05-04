@@ -51,7 +51,7 @@ public class CarBookingArrayDataAccessService implements CarBookingDao {
 
         return carBookings.stream()
                 .filter(carBooking -> carBooking.getId().equals(carBookingId))
-                .findFirst().orElseThrow(() -> new RuntimeException("Booking not found"));
+                .findFirst().orElse(null);
     }
 
     @Override

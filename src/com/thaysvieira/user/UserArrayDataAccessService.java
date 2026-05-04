@@ -22,6 +22,6 @@ public class UserArrayDataAccessService implements UserDao {
         return users.stream()
                 .filter(user -> user.getId().equals(userId))
                 .findFirst()
-                .orElseThrow(() -> new RuntimeException("User not found"));
+                .orElse(null);
     }
 }

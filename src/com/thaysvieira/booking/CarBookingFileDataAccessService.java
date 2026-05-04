@@ -36,7 +36,7 @@ public class CarBookingFileDataAccessService implements CarBookingDao {
 
         return readBookingsInFile().stream()
                 .filter(booking -> booking.getId().equals(carBookingId))
-                .findFirst().orElseThrow(() -> new RuntimeException("Booking not found"));
+                .findFirst().orElse(null);
     }
 
     public boolean cancelBooking(UUID bookingId) {
