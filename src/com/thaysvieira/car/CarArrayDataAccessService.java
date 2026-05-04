@@ -27,12 +27,10 @@ public class CarArrayDataAccessService implements CarDao {
 
     @Override
     public Car getCarById(UUID carId) {
-        for (Car car : cars) {
-            if (car != null && car.getId().equals(carId)) {
-                return car;
-            }
-        }
-        throw new IllegalArgumentException("Car not found");
+        return cars.stream()
+                .filter(car -> car.getId().equals(carId))
+                .findFirst()
+                .orElse(null);
     }
 
     @Override
