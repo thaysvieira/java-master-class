@@ -21,7 +21,7 @@ public class CarFakerDataAccessService implements CarDao {
         return cars.stream()
                 .filter(car -> car.getId().equals(carId))
                 .findFirst()
-                .orElse(null);
+                .orElseThrow(NullPointerException::new);
     }
 
     @Override
