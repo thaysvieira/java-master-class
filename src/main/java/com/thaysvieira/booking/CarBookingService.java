@@ -1,8 +1,12 @@
 package com.thaysvieira.booking;
 
 import com.thaysvieira.car.Car;
+import com.thaysvieira.car.CarDao;
+import com.thaysvieira.car.CarFakerDataAccessService;
 import com.thaysvieira.car.CarService;
 import com.thaysvieira.user.User;
+import com.thaysvieira.user.UserDao;
+import com.thaysvieira.user.UserFakerDataAccessService;
 import com.thaysvieira.user.UserService;
 
 import java.math.BigDecimal;
@@ -19,11 +23,20 @@ public class CarBookingService {
     private final CarBookingDao carBookingDao;
     private final CarService carService;
     private final UserService userService;
+    private final CarDao carFakerService;
+    private final UserDao userFakerService;
 
-    public CarBookingService(CarBookingDao carBookingDao, CarService carService, UserService userService) {
+
+    public CarBookingService(CarBookingDao carBookingDao,
+                             CarService carService,
+                             UserService userService,
+                             CarDao carFakerService,
+                             UserDao userFakerService) {
         this.carBookingDao = carBookingDao;
         this.carService = carService;
         this.userService = userService;
+        this.carFakerService = carFakerService;
+        this.userFakerService = userFakerService;
     }
 
 
@@ -45,10 +58,38 @@ public class CarBookingService {
         return booking;
     }
 
+    public CarBooking bookFakerCar(UUID userId, UUID carId, LocalDate startDate, LocalDate
+            endDate) {
+        //Look up user by userId
+        User user = userFakerService.getUserById(userId);
+        //Look up car by carId
+        Car car = carFakerService.getCarById(carId);
+        //validate dates
+        validateDate(startDate, endDate);
+
+        if (!isCarFakerAvailable(carId)) {
+            throw new IllegalArgumentException("Car not available");
+        }
+
+        var booking = new CarBooking(UUID.randomUUID(), user, car, getPrice(startDate, endDate, car.getRentalPricePerDay()), startDate, endDate, BookingStatus.ACTIVE, LocalDateTime.now());
+        carBookingDao.saveCarBooking(booking);
+        return booking;
+    }
+
 
     public List<CarBooking> getCarBookingsByUser(UUID userId) {
 
         User user = userService.getUserById(userId);
+        if (user == null) {
+            throw new IllegalArgumentException("User id cannot be null");
+        }
+        List<CarBooking> bookings = carBookingDao.getAllCarBooking();
+        return bookings.stream().filter(booking -> booking.getUser().getId().equals(userId)).toList();
+    }
+
+    public List<CarBooking> getCarBookingsByFakerUser(UUID userId) {
+
+        User user = userFakerService.getUserById(userId);
         if (user == null) {
             throw new IllegalArgumentException("User id cannot be null");
         }
@@ -71,10 +112,34 @@ public class CarBookingService {
                 .toList();
     }
 
+    public List<Car> getAvailableFakerCars() {
+
+        List<CarBooking> bookings = carBookingDao.getAllCarBooking();
+        List<Car> cars = carFakerService.getAllCars();
+        Set<UUID> activeCarBookings = getUUIdsActiveCars(bookings);
+
+        return cars.stream()
+                .filter(car -> !activeCarBookings.contains(car.getId()))
+                .toList();
+    }
+
     public List<Car> getAvailableElectricCars() {
 
         List<CarBooking> bookings = carBookingDao.getAllCarBooking();
         List<Car> cars = carService.getCars();
+
+        Set<UUID> activeCarBookings = getUUIdsActiveCars(bookings);
+
+        return cars.stream()
+                .filter(car -> !activeCarBookings.contains(car.getId()))
+                .filter(Car::isElectric)
+                .toList();
+    }
+
+    public List<Car> getAvailableElectricFakerCars() {
+
+        List<CarBooking> bookings = carBookingDao.getAllCarBooking();
+        List<Car> cars = carFakerService.getAllCars();
 
         Set<UUID> activeCarBookings = getUUIdsActiveCars(bookings);
 
@@ -95,6 +160,17 @@ public class CarBookingService {
 
         List<CarBooking> bookings = carBookingDao.getAllCarBooking();
         List<Car> cars = carService.getCars();
+
+        Set<UUID> activeCarBookings = getUUIdsActiveCars(bookings);
+
+        return cars.stream()
+                .anyMatch(car -> !activeCarBookings.contains(carId));
+    }
+
+    private boolean isCarFakerAvailable(UUID carId) {
+
+        List<CarBooking> bookings = carBookingDao.getAllCarBooking();
+        List<Car> cars = carFakerService.getAllCars();
 
         Set<UUID> activeCarBookings = getUUIdsActiveCars(bookings);
 

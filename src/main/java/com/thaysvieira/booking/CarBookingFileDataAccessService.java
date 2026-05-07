@@ -1,7 +1,5 @@
 package com.thaysvieira.booking;
 
-import com.thaysvieira.car.*;
-
 import java.io.*;
 import java.util.Collections;
 import java.util.List;
