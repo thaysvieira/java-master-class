@@ -20,12 +20,13 @@ public class CarBookingService {
     private final CarService carService;
     private final UserService userService;
 
-    public CarBookingService(CarBookingDao carBookingDao, CarService carService, UserService userService) {
+    public CarBookingService(CarBookingDao carBookingDao,
+                             CarService carService,
+                             UserService userService) {
         this.carBookingDao = carBookingDao;
         this.carService = carService;
         this.userService = userService;
     }
-
 
     public CarBooking bookCar(UUID userId, UUID carId, LocalDate startDate, LocalDate
             endDate) {
@@ -44,7 +45,6 @@ public class CarBookingService {
         carBookingDao.saveCarBooking(booking);
         return booking;
     }
-
 
     public List<CarBooking> getCarBookingsByUser(UUID userId) {
 
@@ -99,9 +99,8 @@ public class CarBookingService {
         Set<UUID> activeCarBookings = getUUIdsActiveCars(bookings);
 
         return cars.stream()
-                .anyMatch(car -> !activeCarBookings.contains(carId));
+                .anyMatch(car -> car.getId().equals(carId) && !activeCarBookings.contains(carId));
     }
-
 
     public BigDecimal getPrice(LocalDate startDate, LocalDate endDate, BigDecimal rentalCarPricePerDay) {
 

@@ -20,13 +20,13 @@ public class CarBookingArrayDataAccessService implements CarBookingDao {
     private static final UserDao userArrayDataAccessService = new UserArrayDataAccessService();
     private static final CarDao carArrayDataAccessService = new CarArrayDataAccessService();
 
+
     private static final List<CarBooking> carBookings = new ArrayList<>();
 
     static {
         User user = userArrayDataAccessService.getUserById(UUID.fromString("1be9ed11-0893-4734-9a24-83c6f6aa6474"));
         Car carAudi = carArrayDataAccessService.getCarById(UUID.fromString("28fbcd64-c811-4fe9-8e4b-ac8166f267b1"));
         Car carToyota = carArrayDataAccessService.getCarById(UUID.fromString("b53815cd-d7c4-4c8d-98fc-78d236bf908e"));
-
 
         CarBooking audiBooked = new CarBooking(UUID.fromString("4f1c6a7e-8c5b-4e2a-9d13-6b9a2f4c1d80"), user, carAudi, BigDecimal.valueOf(300),
                 LocalDate.of(2026, 4, 1), LocalDate.of(2026, 4, 6), BookingStatus.ACTIVE, LocalDateTime.of(LocalDate.of(2026, 4, 1), LocalTime.of(13, 0, 0)));
@@ -51,7 +51,7 @@ public class CarBookingArrayDataAccessService implements CarBookingDao {
 
         return carBookings.stream()
                 .filter(carBooking -> carBooking.getId().equals(carBookingId))
-                .findFirst().orElse(null);
+                .findFirst().orElseThrow(NullPointerException::new);
     }
 
     @Override

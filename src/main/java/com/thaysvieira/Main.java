@@ -5,10 +5,7 @@ package com.thaysvieira;
 
 import com.thaysvieira.booking.*;
 import com.thaysvieira.car.*;
-import com.thaysvieira.user.User;
-import com.thaysvieira.user.UserArrayDataAccessService;
-import com.thaysvieira.user.UserDao;
-import com.thaysvieira.user.UserService;
+import com.thaysvieira.user.*;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -21,12 +18,19 @@ public class Main {
 
         CarBookingDao carBookingDaoFile = new CarBookingFileDataAccessService("bookings.dat");
         CarBookingDao carBooking = new CarBookingArrayDataAccessService();
+        CarBookingDao carBookingFakerDao = new CarBookingFakerDataService();
         CarDao carDao = new CarArrayDataAccessService();
+        CarDao carDaoFaker = new CarFakerDataAccessService();
+        CarService carServiceFaker = new CarService(carDaoFaker);
         CarService carService = new CarService(carDao);
         UserDao userDao = new UserArrayDataAccessService();
+        UserDao fakerUserDao = new UserFakerDataAccessService();
         UserService userService = new UserService(userDao);
+        UserService userServiceFaker = new UserService(fakerUserDao);
+
         CarBookingService carBookingService = new CarBookingService(carBooking, carService, userService);
         CarBookingService carBookingServiceFile = new CarBookingService(carBookingDaoFile, carService, userService);
+        CarBookingService carBookingServiceFaker = new CarBookingService(carBookingFakerDao,carServiceFaker,userServiceFaker);
 
 
         System.out.println("Java Master Class");
@@ -44,6 +48,10 @@ public class Main {
                     // Book a car saved in file
                     CarBooking booking = carBookingService.bookCar(UUID.fromString("1be9ed11-0893-4734-9a24-83c6f6aa6474"), UUID.fromString("120759d2-a1ba-4bd5-99e8-08e7c82fac30"), LocalDate.now(), LocalDate.of(2026, 8, 4));
                     System.out.println(booking);
+                    System.out.println("Saving using Faker");
+                    CarBooking fakerBooking = carBookingServiceFaker.bookCar(UUID.fromString("9b4b3c7f-1d3e-4c82-a3f9-5d6e2a8f71b4"), UUID.fromString("3d8f1a7b-5c42-4d9e-91f7-2b6c8e4a1f93"), LocalDate.now(), LocalDate.of(2026, 8, 4));
+                    System.out.println(fakerBooking);
+                    System.out.println("Saving using file");
                     CarBooking saveBookingInFile = carBookingServiceFile.bookCar(UUID.fromString("1be9ed11-0893-4734-9a24-83c6f6aa6474"), UUID.fromString("120759d2-a1ba-4bd5-99e8-08e7c82fac30"), LocalDate.now(), LocalDate.of(2026, 8, 4));
                     System.out.println(saveBookingInFile);
                     break;
@@ -59,9 +67,13 @@ public class Main {
                     // View car booked by the user
                     List<CarBooking> carBookingsByUser = carBookingService.getCarBookingsByUser(UUID.fromString("1be9ed11-0893-4734-9a24-83c6f6aa6474"));
                     List<CarBooking> carBookingsFileByUser = carBookingService.getCarBookingsByUser(UUID.fromString("1be9ed11-0893-4734-9a24-83c6f6aa6474"));
+                    List<CarBooking> carBookingsByUserFaker = carBookingServiceFaker.getCarBookingsByUser(UUID.fromString("9b4b3c7f-1d3e-4c82-a3f9-5d6e2a8f71b4"));
+
                     System.out.println(carBookingsByUser);
                     System.out.println("Get all bookings from the file");
                     System.out.println(carBookingsFileByUser);
+                    System.out.println("Get all bookings from Faker");
+                    System.out.println(carBookingsByUserFaker);
                     break;
                 case 4:
                     // View all bookings
@@ -70,21 +82,35 @@ public class Main {
                     allBookings = carBooking.getAllCarBooking();
                     System.out.println("Getting all the booking from a file");
                     System.out.println(allBookings);
+                    List<CarBooking> allBookingsFaker = carBookingService.getAllBookings();
+                    System.out.println("Getting all the booking from Faker");
+                    System.out.println(allBookingsFaker);
+
                     break;
                 case 5:
                     // View all the available cars
                     List<Car> availableCars = carBookingService.getAvailableCars();
                     System.out.println(availableCars);
+                    List<Car> availableFakerCars = carBookingServiceFaker.getAvailableCars();
+                    System.out.println("Getting available cars from Faker");
+                    System.out.println(availableFakerCars);
                     break;
                 case 6:
                     // View all the available electric cars
                     List<Car> availableElectricCars = carBookingService.getAvailableElectricCars();
                     System.out.println(availableElectricCars);
+
+                    List<Car> availableFakerElectricCars = carBookingServiceFaker.getAvailableElectricCars();
+                    System.out.println("View all the available faker electric cars");
+                    System.out.println(availableFakerElectricCars);
                     break;
                 case 7:
                     // View all users
                     List<User> allUsers = userService.getAllUsers();
                     System.out.println(allUsers);
+                    List<User> allFakerUsers = userServiceFaker.getAllUsers();
+                    System.out.println("All faker available users");
+                    System.out.println(allFakerUsers);
                     break;
                 case 8:
                     running = false;
