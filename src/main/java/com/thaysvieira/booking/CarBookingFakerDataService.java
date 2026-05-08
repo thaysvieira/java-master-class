@@ -13,6 +13,7 @@ import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.UUID;
 
 public class CarBookingFakerDataService implements CarBookingDao {
@@ -42,7 +43,7 @@ public class CarBookingFakerDataService implements CarBookingDao {
     public CarBooking getCarBookingById(UUID carBookingId) {
         return carBookings.stream()
                 .filter(carBooking -> carBooking.getId().equals(carBookingId))
-                .findFirst().orElseThrow(NullPointerException::new);
+                .findFirst().orElseThrow(NoSuchElementException::new);
     }
 
     @Override
