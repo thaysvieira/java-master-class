@@ -5,6 +5,7 @@ import com.github.javafaker.Faker;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.UUID;
 
 public class CarFakerDataAccessService implements CarDao {
@@ -21,7 +22,7 @@ public class CarFakerDataAccessService implements CarDao {
         return cars.stream()
                 .filter(car -> car.getId().equals(carId))
                 .findFirst()
-                .orElseThrow(NullPointerException::new);
+                .orElseThrow(NoSuchElementException::new);
     }
 
     @Override

@@ -4,6 +4,7 @@ import com.github.javafaker.Faker;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.UUID;
 
 public class UserFakerDataAccessService implements UserDao {
@@ -27,6 +28,6 @@ public class UserFakerDataAccessService implements UserDao {
 
         return users.stream()
                 .filter(user -> user.getId().equals(userId))
-                .findFirst().orElseThrow(NullPointerException::new);
+                .findFirst().orElseThrow(NoSuchElementException::new);
     }
 }
