@@ -69,14 +69,16 @@ public class CarBookingFileDataAccessService implements CarBookingDao {
     private List<CarBooking> readBookingsInFile() {
         File file = new File(filePath);
 
-        if (file.exists() || file.length() == 0) {
+        if (!file.exists() || file.length() == 0) {
             return Collections.emptyList();
         }
 
         try (ObjectInputStream in =
                      new ObjectInputStream(new FileInputStream(file))) {
 
-            return List.of((CarBooking[]) in.readObject());
+            CarBooking booking = (CarBooking) in.readObject();
+
+            return List.of(booking);
 
         } catch (IOException | ClassNotFoundException e) {
             throw new RuntimeException("Failed to read bookings", e);
