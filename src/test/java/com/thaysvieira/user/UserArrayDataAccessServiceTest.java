@@ -19,14 +19,14 @@ class UserArrayDataAccessServiceTest {
     }
 
     @Test
-    void getAllUsers() {
+    void shouldGetAllUsers() {
         List<User> userList = underTest.getAllUsers();
         assertThat(userList).isNotNull();
         assertThat(userList.size()).isEqualTo(2);
     }
 
     @Test
-    void canGetUserById() {
+    void shouldGetUserById() {
         UUID id = UUID.fromString("1be9ed11-0893-4734-9a24-83c6f6aa6474");
         User user = underTest.getUserById(id);
         assertThat(user).isNotNull();

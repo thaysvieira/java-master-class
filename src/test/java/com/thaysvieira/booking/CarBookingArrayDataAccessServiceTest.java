@@ -25,7 +25,7 @@ class CarBookingArrayDataAccessServiceTest {
     }
 
     @Test
-    void saveCarBooking() {
+    void shouldSaveCarBooking() {
 
         Car toyota = new Car(
                 UUID.fromString("b53815cd-d7c4-4c8d-98fc-78d236bf908e"),
@@ -55,14 +55,14 @@ class CarBookingArrayDataAccessServiceTest {
     }
 
     @Test
-    void getAllCarBooking() {
+    void shouldReturnAllCarBooking() {
         List<CarBooking> bookings = underTest.getAllCarBooking();
         assertThat(bookings).isNotNull();
-        assertThat(bookings.size()).isEqualTo(2);
+        assertThat(bookings.size()).isEqualTo(3);
     }
 
     @Test
-    void getCarBookingById() {
+    void shouldGetCarBookingById() {
         UUID bookingId = UUID.fromString("4f1c6a7e-8c5b-4e2a-9d13-6b9a2f4c1d80");
         CarBooking booking = underTest.getCarBookingById(bookingId);
         assertThat(booking).isNotNull();
@@ -71,7 +71,7 @@ class CarBookingArrayDataAccessServiceTest {
     }
 
     @Test
-    void cancelBooking() {
+    void shouldCancelBooking() {
         CarBooking booking = underTest.getCarBookingById(UUID.fromString("4f1c6a7e-8c5b-4e2a-9d13-6b9a2f4c1d80"));
         underTest.cancelBooking(booking.getId());
         assertEquals(BookingStatus.CANCELLED, booking.getStatus());

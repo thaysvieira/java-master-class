@@ -6,9 +6,7 @@ import com.thaysvieira.user.User;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.api.io.TempDir;
-import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.io.FileInputStream;
 import java.io.ObjectInputStream;
@@ -21,7 +19,6 @@ import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-@ExtendWith(MockitoExtension.class)
 class CarBookingFileDataAccessServiceTest {
     @TempDir
     Path tempDir;
@@ -62,7 +59,7 @@ class CarBookingFileDataAccessServiceTest {
     }
 
     @Test
-    void saveCarBooking() throws Exception {
+    void shouldSaveCarBooking() throws Exception {
         underTest.saveCarBooking(carBooking);
         try (ObjectInputStream in =
                      new ObjectInputStream(new FileInputStream(filePath.toFile()))) {
@@ -72,7 +69,7 @@ class CarBookingFileDataAccessServiceTest {
     }
 
     @Test
-    void getAllCarBooking() {
+    void shouldReturnAllCarBooking() {
 
         underTest.saveCarBooking(carBooking);
         List<CarBooking> bookings = underTest.getAllCarBooking();
@@ -81,14 +78,14 @@ class CarBookingFileDataAccessServiceTest {
     }
 
     @Test
-    void getCarBookingById() {
+    void shouldGetCarBookingById() {
         underTest.saveCarBooking(carBooking);
         CarBooking booking = underTest.getCarBookingById(UUID.fromString("4f1c6a7e-8c5b-4e2a-9d13-6b9a2f4c1d80"));
         assertEquals(booking, carBooking);
     }
 
     @Test
-    void cancelBooking() {
+    void shouldCancelBooking() {
         underTest.saveCarBooking(carBooking);
         underTest.cancelBooking(carBooking.getId());
         List<CarBooking> bookings = underTest.getAllCarBooking();

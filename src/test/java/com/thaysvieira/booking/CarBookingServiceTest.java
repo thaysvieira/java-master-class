@@ -27,9 +27,9 @@ class CarBookingServiceTest {
     @Mock
     private CarBookingDao carBookingDao;
     @Mock
-    private static CarService carService;
+    private  CarService carService;
     @Mock
-    private static UserService userService;
+    private  UserService userService;
     @InjectMocks
     private CarBookingService underTest;
     private static final List<CarBooking> carBookings = new ArrayList<>();
@@ -97,7 +97,7 @@ class CarBookingServiceTest {
     }
 
     @Test
-    void bookCar() {
+    void shouldBookCar() {
         UUID userId = UUID.fromString("1be9ed11-0893-4734-9a24-83c6f6aa6474");
         UUID carId = UUID.fromString("28fbcd64-c811-4fe9-8e4b-ac8166f267b1");
 
@@ -131,7 +131,7 @@ class CarBookingServiceTest {
     }
 
     @Test
-    void getCarBookingsByUser() {
+    void shouldGetCarBookingsByUser() {
         UUID userId = UUID.fromString("1be9ed11-0893-4734-9a24-83c6f6aa6474");
         User user = new User(userId, "john");
 
@@ -146,7 +146,7 @@ class CarBookingServiceTest {
     }
 
     @Test
-    void getAllBookings() {
+    void shouldReturnAllBookings() {
         given(carBookingDao.getAllCarBooking()).willReturn(carBookings);
         List<CarBooking> carBookingList = underTest.getAllBookings();
         assertThat(carBookingList).isNotNull();
@@ -154,7 +154,7 @@ class CarBookingServiceTest {
     }
 
     @Test
-    void getAvailableElectricCars() {
+    void shouldReturnAvailableElectricCars() {
 
         given(carBookingDao.getAllCarBooking()).willReturn(carBookings);
         given(carService.getCars()).willReturn(cars);

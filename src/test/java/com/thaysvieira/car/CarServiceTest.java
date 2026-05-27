@@ -34,7 +34,7 @@ class CarServiceTest {
     }
 
     @Test
-    void canGetCarById() {
+    void shouldGetCarById() {
         given(underTest.getCars()).willReturn(cars);
         List<Car> carList = underTest.getCars();
         assertThat(carList).isNotNull();
@@ -43,7 +43,7 @@ class CarServiceTest {
     }
 
     @Test
-    void getCars() {
+    void shouldReturnCars() {
         given(carDao.getCarById(UUID.fromString("28fbcd64-c811-4fe9-8e4b-ac8166f267b1"))).willReturn(cars.getFirst());
         Car car = carDao.getCarById(UUID.fromString("28fbcd64-c811-4fe9-8e4b-ac8166f267b1"));
         assertThat(car).isNotNull();

@@ -29,7 +29,7 @@ class CarArrayDataAccessServiceTest {
     }
 
     @Test
-    void getAllCars() {
+    void shouldReturnAllCars() {
         List<Car> carList = underTest.getAllCars();
         assertThat(carList).isNotNull();
         assertThat(carList.size()).isEqualTo(12);

@@ -34,7 +34,7 @@ class UserServiceTest {
 
 
     @Test
-    void getAllUsers() {
+    void shouldGetAllUsers() {
         given(underTest.getAllUsers()).willReturn(users);
         List<User> userList = underTest.getAllUsers();
         assertThat(userList).isNotNull();
@@ -43,7 +43,7 @@ class UserServiceTest {
     }
 
     @Test
-    void getUserById() {
+    void shouldGetUserById() {
         given(userDao.getUserById(UUID.fromString("1be9ed11-0893-4734-9a24-83c6f6aa6474"))).willReturn(users.getFirst());
         User user = userDao.getUserById(UUID.fromString("1be9ed11-0893-4734-9a24-83c6f6aa6474"));
         assertThat(user).isNotNull();
